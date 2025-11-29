@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ANEW – Confidence, Reimagined</title>
+
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+<script src="firebase-config.js"></script>
+
+<style>
+body{margin:0;font-family:Arial,sans-serif;background:#F4EDE3;color:#3A2F2A;}
+header{background:#E3C6BA;padding:16px 24px;display:flex;justify-content:space-between;align-items:center;}
+header h1{margin:0;font-size:24px;}
+
+/* Sidebar */
+.menu-icon{font-size:28px;cursor:pointer;position:fixed;top:18px;right:18px;z-index:1100;}
+.sidebar{height:100%;width:0;position:fixed;top:0;right:0;background:#E3C6BA;overflow-x:hidden;transition:0.35s;padding-top:60px;z-index:1200;box-shadow:-3px 0 10px rgba(0,0,0,0.15);}
+.sidebar a{padding:14px 24px;display:block;font-size:18px;color:#3A2F2A;text-decoration:none;}
+.sidebar .closebtn{position:absolute;top:10px;right:20px;font-size:32px;}
+.overlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.45);z-index:1150;}
+
+/* Conteúdo */
+.hero {text-align:center;padding:80px 20px;background:#F2D7D0;}
+.hero h2 {font-size:40px;margin-bottom:10px;}
+.hero p {font-size:20px;max-width:600px;margin:auto;}
+.section {padding:60px 20px;max-width:900px;margin:auto;}
+.section h3 {font-size:28px;margin-bottom:15px;color:#6B5A54;}
+.section h4 {font-size:22px;margin-bottom:5px;}
+.footer {text-align:center;padding:30px;background:#E3C6BA;margin-top:40px;}
+.footer a {color:#3A2F2A;text-decoration:none;font-weight:bold;margin:0 5px;}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>ANEW</h1>
+</header>
+
+<!-- menu icon + sidebar -->
+<div class="menu-icon" onclick="toggleMenu()">☰</div>
+<div id="sidebar" class="sidebar" aria-hidden="true">
+  <a href="javascript:void(0)" class="closebtn" onclick="toggleMenu()">&times;</a>
+  <a href="index.html">Início</a>
+  <a href="products.html">Produtos</a>
+  <a href="cart.html">Carrinho</a>
+  <a href="profile.html">Perfil</a>
+  <a href="#" onclick="logout()">Logout</a>
+</div>
+<div id="overlay" class="overlay" onclick="toggleMenu()"></div>
+
+<section class="hero">
+  <h2>Para todas as formas de ser mulher.</h2>
+  <p>Sutiãs e próteses personalizadas para quem merece conforto, dignidade e confiança.</p>
+</section>
+
+<section id="about" class="section">
+  <h3>Quem Somos?</h3>
+  <h4>Missão</h4>
+  <p>A nossa missão é proporcionar lingerie personalizável que devolva confiança a todas as mulheres.</p>
+  <h4>Visão</h4>
+  <p>Ser a marca que redefine o conforto íntimo, promovendo uma relação saudável e positiva com o próprio corpo.</p>
+  <h4>Valores</h4>
+  <p>Inclusão, conforto, sensibilidade, respeito e autenticidade.</p>
+</section>
+
+<section id="contact" class="section">
+  <h3>Contacto</h3>
+  <p>Email: anew.jap@gmail.com</p>
+  <p><a href="https://linktr.ee/anew_" target="_blank">Redes Sociais</a></p>
+</section>
+
+<footer class="footer">
+  <p>ANEW © 2025 — Para todas as formas de ser mulher.</p>
+</footer>
+
+<script>
+function toggleMenu(){
+  const sidebar = document.getElementById('sidebar');
+  const overlay = document.getElementById('overlay');
+  if(sidebar.style.width === '250px'){
+    sidebar.style.width = '0';
+    overlay.style.display = 'none';
+  } else {
+    sidebar.style.width = '250px';
+    overlay.style.display = 'block';
+  }
+}
+
+function logout(){
+  if(typeof auth !== 'undefined'){
+    auth.signOut().then(()=> window.location = 'login.html');
+  } else {
+    window.location = 'login.html';
+  }
+}
+</script>
+
+</body>
+</html>

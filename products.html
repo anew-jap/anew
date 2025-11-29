@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Produtos – ANEW</title>
+
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+
+<!-- firebase-config.js -->
+<script src="firebase-config.js"></script>
+
+<style>
+body{margin:0;font-family:Arial,sans-serif;background:#F4EDE3;color:#3A2F2A;}
+header{background:#E3C6BA;padding:16px 24px;display:flex;justify-content:center;align-items:center;}
+header h1{margin:0;font-size:24px;}
+
+/* MENU ICON */
+.menu-icon{
+    font-size:30px;
+    cursor:pointer;
+    position:fixed;
+    top:18px;
+    right:18px; /* sidebar à direita */
+    z-index:1100;
+}
+
+/* SIDEBAR */
+.sidebar{
+    height:100%;
+    width:0;
+    position:fixed;
+    top:0;
+    right:0; /* à direita */
+    background:#E3C6BA;
+    overflow-x:hidden;
+    transition:0.35s;
+    padding-top:60px;
+    z-index:1200;
+    box-shadow:-3px 0 10px rgba(0,0,0,0.15);
+}
+
+.sidebar a{
+    padding:14px 24px;
+    display:block;
+    font-size:18px;
+    color:#3A2F2A;
+    text-decoration:none;
+}
+
+.sidebar .closebtn{
+    position:absolute;
+    top:10px;
+    right:20px;
+    font-size:32px;
+}
+
+/* OVERLAY */
+.overlay{
+    display:none;
+    position:fixed;
+    top:0;left:0;
+    width:100%;height:100%;
+    background:rgba(0,0,0,0.45);
+    z-index:1150;
+}
+
+/* Produtos */
+.section{padding:48px;display:flex;flex-wrap:wrap;justify-content:center;gap:28px;}
+.product{background:#FFF;padding:18px;border-radius:12px;width:320px;text-align:center;box-shadow:0 6px 16px rgba(0,0,0,0.06);}
+.product img{width:100%;height:230px;object-fit:cover;border-radius:10px;}
+.product h4{margin:12px 0 6px;font-size:18px;}
+.product p.price{margin:6px 0;font-weight:bold;}
+.controls{display:flex;justify-content:center;gap:10px;margin-top:10px;}
+select{padding:8px;border-radius:8px;border:1px solid #ccc;}
+.product button{display:block;width:100%;margin-top:12px;padding:12px;border:none;background:#C69A8D;color:white;border-radius:8px;cursor:pointer;font-weight:bold;}
+.product button[disabled]{opacity:0.55;cursor:not-allowed;}
+.note{font-size:13px;color:#6b5a54;margin-top:8px;}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>ANEW</h1>
+</header>
+
+<!-- botão para abrir sidebar -->
+<div class="menu-icon" onclick="toggleMenu()">☰</div>
+
+<!-- SIDEBAR -->
+<div id="sidebar" class="sidebar">
+  <a href="javascript:void(0)" class="closebtn" onclick="toggleMenu()">&times;</a>
+  <a href="index.html">Início</a>
+  <a href="products.html">Produtos</a>
+  <a href="cart.html">Carrinho</a>
+  <a href="profile.html">Perfil</a>
+  <a href="#" onclick="logout()">Logout</a>
+</div>
+
+<!-- overlay -->
+<div id="overlay" class="overlay" onclick="toggleMenu()"></div>
+
+<section class="section" id="productsList">
+
+  <!-- PRODUCT 1 -->
+  <div class="product" data-id="comfort-classic">
+    <img src="images/comfort_classic.jpg" alt="Comfort Classic">
+    <h4>Comfort Classic</h4>
+    <p class="price">€29.99</p>
+    <div class="controls">
+      <select class="size-select">
+        <option>XS</option><option>S</option><option selected>M</option><option>L</option><option>XL</option>
+      </select>
+      <select class="color-select">
+        <option>Rosado Suave</option><option>Nude Médio</option><option>Terra Claro</option><option>Azeitona Suave</option>
+      </select>
+    </div>
+    <button class="addBtn" onclick="addToCartFromCard(this,'Comfort Classic',29.99)">Adicionar ao Carrinho</button>
+    <div class="note">Escolhe cor e tamanho antes de adicionar.</div>
+  </div>
+
+  <!-- PRODUCT 2 -->
+  <div class="product" data-id="full-support">
+    <img src="images/full_support.jpg" alt="Full Support">
+    <h4>Full Support</h4>
+    <p class="price">€34.99</p>
+    <div class="controls">
+      <select class="size-select"><option>XS</option><option>S</option><option selected>M</option><option>L</option><option>XL</option></select>
+      <select class="color-select"><option>Preto</option><option>Bege</option><option selected>Branco</option><option>Rosa</option></select>
+    </div>
+    <button class="addBtn" onclick="addToCartFromCard(this,'Full Support',34.99)">Adicionar ao Carrinho</button>
+    <div class="note">Personalizações disponíveis no produto "Personalizado".</div>
+  </div>
+
+  <!-- PRODUCT 3 -->
+  <div class="product" data-id="soft-curve">
+    <img src="images/soft_curve.jpg" alt="Soft Curve">
+    <h4>Soft Curve</h4>
+    <p class="price">€31.99</p>
+    <div class="controls">
+      <select class="size-select"><option>XS</option><option>S</option><option selected>M</option><option>L</option><option>XL</option></select>
+      <select class="color-select"><option>Rosado</option><option>Nude</option><option selected>Preto</option><option>Bege</option></select>
+    </div>
+    <button class="addBtn" onclick="addToCartFromCard(this,'Soft Curve',31.99)">Adicionar ao Carrinho</button>
+  </div>
+
+  <!-- PRODUCT 4 -->
+  <div class="product" data-id="prosthesis-fit">
+    <img src="images/prosthesis_fit.jpg" alt="Prosthesis Fit">
+    <h4>Prosthesis Fit</h4>
+    <p class="price">€39.99</p>
+    <div class="controls">
+      <select class="size-select"><option>XS</option><option>S</option><option selected>M</option><option>L</option><option>XL</option></select>
+      <select class="color-select"><option>Bege Claro</option><option selected>Bege</option><option>Marfim</option></select>
+    </div>
+    <button class="addBtn" onclick="addToCartFromCard(this,'Prosthesis Fit',39.99)">Adicionar ao Carrinho</button>
+  </div>
+
+  <!-- PRODUCT 5 -->
+  <div class="product" data-id="personalizado">
+    <img src="images/personalizado.jpg" alt="Personalizado">
+    <h4>Personalizado</h4>
+    <p class="price">€49.99</p>
+    <div class="controls">
+      <select class="size-select"><option>XS</option><option>S</option><option selected>M</option><option>L</option><option>XL</option></select>
+      <select class="color-select"><option selected>Rosado Suave</option><option>Nude Médio</option><option>Terra Claro</option><option>Azeitona Suave</option></select>
+    </div>
+    <button class="addBtn" onclick="addToCartFromCard(this,'Personalizado',49.99)">Adicionar ao Carrinho</button>
+    <div class="note">Este produto permite mais personalizações na página do pedido.</div>
+  </div>
+
+</section>
+
+<script>
+/* SIDEBAR */
+function toggleMenu(){
+  const sidebar = document.getElementById("sidebar");
+  const overlay = document.getElementById("overlay");
+  if(sidebar.style.width==="250px"){
+    sidebar.style.width="0";
+    overlay.style.display="none";
+  } else {
+    sidebar.style.width="250px";
+    overlay.style.display="block";
+  }
+}
+
+/* Logout */
+function logout(){
+  auth.signOut().then(()=> window.location="login.html");
+}
+
+/* FIREBASE + CART */
+let currentUser = null;
+const addButtons = document.querySelectorAll(".addBtn");
+addButtons.forEach(b=>b.disabled=true);
+
+auth.onAuthStateChanged(user=>{
+  currentUser=user;
+  addButtons.forEach(b=>b.disabled=!user);
+});
+
+function addToCartFromCard(buttonEl, name, price){
+  if(!currentUser){alert("Faz login para adicionar produtos!"); return;}
+  const productCard = buttonEl.closest(".product");
+  const size = productCard.querySelector(".size-select").value;
+  const color = productCard.querySelector(".color-select").value;
+  const cartRef = db.collection("carts").doc(currentUser.uid);
+  cartRef.get().then(doc=>{
+    let cart = doc.exists?doc.data().items:[];
+    cart.push({name,price,size,color,addedAt:new Date().toISOString()});
+    return cartRef.set({items:cart});
+  }).then(()=>alert(`${name} (${size}, ${color}) adicionado ao carrinho!`))
+    .catch(err=>alert("Erro: "+err.message));
+}
+</script>
+
+</body>
+</html>
