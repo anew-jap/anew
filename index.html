@@ -93,6 +93,43 @@ header h1{margin:0;font-size:24px;}
   text-decoration:underline;
 }
 
+/* =========================
+   MOBILE AJUSTES INDEX
+========================= */
+@media (max-width: 768px){
+
+  /* Video & imagem mais baixos */
+  .video-section,
+  .image-section{
+    height:45vh;        /* antes 75vh */
+  }
+
+  /* Evitar cortes agressivos */
+  .video-section video,
+  .image-section img{
+    object-fit:cover;
+  }
+
+  /* Botões mais visíveis no mobile */
+  .video-overlay-btn a,
+  .image-overlay-btn a{
+    font-size:16px;
+  }
+
+  /* Hero mais compacto */
+  .hero{
+    padding:50px 20px;
+  }
+
+  .hero h2{
+    font-size:28px;
+  }
+
+  .hero p{
+    font-size:16px;
+  }
+}
+
 /* Footer */
 footer{background:#fff;padding:60px 20px;margin-top:60px;}
 footer h4{margin-bottom:10px;}
