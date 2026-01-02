@@ -35,18 +35,36 @@ button:hover{background:#A8756B;}
 
 <script>
 function register(){
-  const name = document.getElementById('name').value;
-  const email = document.getElementById('email').value;
+  const name = document.getElementById('name').value.trim();
+  const email = document.getElementById('email').value.trim();
   const password = document.getElementById('password').value;
 
-  auth.createUserWithEmailAndPassword(email,password)
-    .then(cred=>{
-      return cred.user.updateProfile({ displayName:name });
+  if(!name || !email || !password){
+    alert("Preenche todos os campos");
+    return;
+  }
+
+  auth.createUserWithEmailAndPassword(email, password)
+    .then(cred => {
+      // Atualiza o displayName no Authentication
+      return cred.user.updateProfile({
+        displayName: name
+      }).then(() => {
+        // Cria o utilizador no Firestore
+        return db.collection("users").doc(cred.user.uid).set({
+          nome: name,
+          email: email,
+          createdAt: new Date().toISOString()
+        });
+      });
     })
-    .then(()=> window.location='index.html')
-    .catch(err=> alert(err.message));
+    .then(() => {
+      window.location = "index.html";
+    })
+    .catch(err => alert(err.message));
 }
 </script>
 
 </body>
 </html>
+
