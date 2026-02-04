@@ -248,6 +248,17 @@ function toggleMenu(){
 </script>
 
 <script src="//code.tidio.co/vhuucpvsgiojngbm6uwhdssr7z3z7nyj.js" async></script>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  if (window.tidioChatApi) {
+    window.tidioChatApi.on("ready", function () {
+      window.tidioChatApi.reset();
+    });
+  }
+});
+</script>
+
 </body>
 </html>
+
 
