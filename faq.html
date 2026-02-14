@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>FAQ – ANEW</title>
+
+<script src="firebase-config.js"></script>
+
+<style>
+body{margin:0;font-family:Arial,sans-serif;background:#F4EDE3;color:#3A2F2A;}
+header{background:#E3C6BA;padding:16px 24px;display:flex;justify-content:center;}
+header h1{margin:0;font-size:24px;}
+.menu-icon{position:fixed;top:18px;right:18px;font-size:28px;cursor:pointer;}
+
+.sidebar{
+    height:100%;
+    width:0;
+    position:fixed;
+    top:0;
+    right:0; /* à direita */
+    background:#E3C6BA;
+    overflow-x:hidden;
+    transition:0.35s;
+    padding-top:60px;
+    z-index:1200;
+    box-shadow:-3px 0 10px rgba(0,0,0,0.15);
+}
+
+.sidebar a{
+    padding:14px 24px;
+    display:block;
+    font-size:18px;
+    color:#3A2F2A;
+    text-decoration:none;
+}
+
+.sidebar .closebtn{
+    position:absolute;
+    top:10px;
+    right:20px;
+    font-size:32px;
+}
+
+
+.overlay{display:none;position:fixed;width:100%;height:100%;background:rgba(0,0,0,.45);}
+
+.container{max-width:900px;margin:40px auto;background:white;padding:32px;border-radius:12px;box-shadow:0 6px 16px rgba(0,0,0,.06);}
+.faq-item{margin-bottom:22px;}
+.faq-item strong{display:block;margin-bottom:6px;}
+footer{background:#fff;padding:60px 20px;margin-top:60px;}
+footer h4{margin-bottom:10px;}
+footer a{display:block;margin:6px 0;color:#3A2F2A;text-decoration:none;}
+footer a:hover{text-decoration:underline;}
+
+</style>
+<link
+  rel="stylesheet"
+  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+/>
+</head>
+
+<body>
+<header><h1>ANEW</h1></header>
+
+<div class="menu-icon" onclick="toggleMenu()">☰</div>
+<div id="sidebar" class="sidebar">
+  <a href="javascript:void(0)" class="closebtn" onclick="toggleMenu()">&times;</a>
+  <a href="index.html">Início</a>
+  <a href="products.html">Produtos</a>
+  <a href="cart.html">Carrinho</a>
+  <a href="profile.html">Perfil</a>
+  <a href="#" onclick="logout()">Logout</a>
+</div>
+<div id="overlay" class="overlay" onclick="toggleMenu()"></div>
+
+<div class="container">
+  <h2>Perguntas Frequentes</h2>
+
+  <div class="faq-item">
+    <strong>Os produtos são personalizados?</strong>
+    <p>Sim, todos os nossos produtos podem ser adaptados às tuas necessidades.</p>
+  </div>
+
+  <div class="faq-item">
+    <strong>Fazem envios para todo o país?</strong>
+    <p>Sim, enviamos para todo o território nacional.</p>
+  </div>
+
+  <div class="faq-item">
+    <strong>Posso devolver um produto?</strong>
+    <p>Produtos personalizados não são reembolsáveis, salvo defeito.</p>
+  </div>
+</div>
+
+<script>
+function toggleMenu(){
+  const s=document.getElementById("sidebar"),o=document.getElementById("overlay");
+  s.style.width==="250px"?(s.style.width="0",o.style.display="none"):(s.style.width="250px",o.style.display="block");
+}
+</script>
+<footer>
+  <div style="max-width:1200px;margin:auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:40px;">
+
+    <div>
+      <h4>OBTER AJUDA</h4>
+      <a href="contact.html">Contacta-nos</a>
+      <a href="faq.html">Perguntas Frequentes</a>
+    </div>
+
+    <div>
+      <h4>ANEW</h4>
+      <a href="about.html">Sobre nós</a>
+    </div>
+
+    <div>
+      <h4>INFORMAÇÕES</h4>
+      <a href="#">Privacidade</a>
+      <a href="#">Termos</a>
+    </div>
+
+    <div>
+      <h4>SEGUE-NOS</h4>
+      <div style="display:flex;gap:18px;margin-top:12px;font-size:22px;">
+
+  <a href="https://www.instagram.com/anew.pt"
+     target="_blank"
+     aria-label="Instagram"
+     style="color:#3A2F2A;">
+    <i class="fa-brands fa-instagram"></i>
+  </a>
+
+  <a href="https://www.tiktok.com/@anew.jap"
+     target="_blank"
+     aria-label="TikTok"
+     style="color:#3A2F2A;">
+    <i class="fa-brands fa-tiktok"></i>
+  </a>
+
+  <a href="https://www.facebook.com/anew.jap"
+     target="_blank"
+     aria-label="Facebook"
+     style="color:#3A2F2A;">
+    <i class="fa-brands fa-facebook-f"></i>
+  </a>
+
+      </div>
+    </div>
+  </div>
+
+  <div style="text-align:center;margin-top:40px;font-size:14px;color:#666;">
+    © 2026 ANEW — Para todas as formas de ser mulher.
+  </div>
+</footer>
+</body>
+</html>

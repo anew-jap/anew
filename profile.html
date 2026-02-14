@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Perfil – ANEW</title>
+
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+<script src="firebase-config.js"></script>
+
+<style>
+body {font-family:Arial;background:#F4EDE3;color:#3A2F2A;margin:0;padding:0;}
+header {background:#E3C6BA;padding:16px 24px;display:flex;justify-content:center;align-items:center;}
+h2,h3 {margin-top:0;}
+.container {max-width:800px;margin:40px auto;padding:24px;background:white;border-radius:12px;box-shadow:0 6px 16px rgba(0,0,0,0.06);}
+.profile-right label {display:block;margin-top:12px;font-weight:bold;}
+.profile-right input {width:100%;padding:10px;margin-top:4px;border-radius:8px;border:1px solid #ccc;}
+.profile-right button {margin-top:10px;padding:10px 18px;background:#C69A8D;color:white;border:none;border-radius:8px;cursor:pointer;}
+.profile-right button:hover {background:#A8756B;}
+.order-history {margin-top:32px;}
+.order-list {border-top:1px solid #ccc;}
+.order-item {display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #eee;}
+.menu-icon{font-size:28px;cursor:pointer;position:fixed;top:18px;right:18px;z-index:1100;}
+.sidebar{height:100%;width:0;position:fixed;top:0;right:0;background:#E3C6BA;overflow-x:hidden;transition:0.35s;padding-top:60px;z-index:1200;box-shadow:-3px 0 10px rgba(0,0,0,0.15);}
+.sidebar a{padding:14px 24px;display:block;font-size:18px;color:#3A2F2A;text-decoration:none;}
+.sidebar .closebtn{position:absolute;top:10px;right:20px;font-size:32px;}
+.overlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.45);z-index:1150;}
+
+footer{background:#fff;padding:60px 20px;margin-top:60px;}
+footer h4{margin-bottom:10px;}
+footer a{display:block;margin:6px 0;color:#3A2F2A;text-decoration:none;}
+footer a:hover{text-decoration:underline;}
+
+</style>
+<link
+  rel="stylesheet"
+  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+/>
+</head>
+<body>
+
+<header><h1>ANEW</h1></header>
+
+<div class="menu-icon" onclick="toggleMenu()">☰</div>
+<div id="sidebar" class="sidebar">
+  <a href="javascript:void(0)" class="closebtn" onclick="toggleMenu()">&times;</a>
+  <a href="index.html">Início</a>
+  <a href="products.html">Produtos</a>
+  <a href="cart.html">Carrinho</a>
+  <a href="profile.html">Perfil</a>
+  <a href="#" onclick="logout()">Logout</a>
+</div>
+<div id="overlay" class="overlay" onclick="toggleMenu()"></div>
+
+<div class="container">
+  <div class="profile-right">
+    <label>Email:</label>
+    <input type="email" id="emailInput" placeholder="Email">
+    <label>Nome:</label>
+    <input type="text" id="displayNameInput" placeholder="Nome completo">
+    <label>Morada:</label>
+    <input type="text" id="moradaInput" placeholder="Morada">
+    <label>Telefone:</label>
+    <input type="text" id="telefoneInput" placeholder="Telefone">
+    <button onclick="saveProfile()">Guardar Alterações</button>
+    <button onclick="changePassword()">Alterar Password</button>
+    <button onclick="logout()">Terminar Sessão</button>
+  </div>
+
+  <div class="order-history">
+    <h3>Histórico de Encomendas</h3>
+    <div id="orderHistory">A carregar encomendas…</div>
+  </div>
+</div>
+
+<script>
+// SIDEBAR
+function toggleMenu(){
+  const sidebar = document.getElementById('sidebar');
+  const overlay = document.getElementById('overlay');
+  if(sidebar.style.width === '250px'){
+    sidebar.style.width='0';
+    overlay.style.display='none';
+  } else {
+    sidebar.style.width='250px';
+    overlay.style.display='block';
+  }
+}
+
+// LOGOUT
+function logout(){ auth.signOut().then(()=> window.location='index.html'); }
+
+let currentUser = null;
+let userDataRef = null;
+
+auth.onAuthStateChanged(user=>{
+  if(!user){ window.location='login.html'; return; }
+  currentUser = user;
+  userDataRef = db.collection('users').doc(currentUser.uid);
+
+  // Preenche campos
+  document.getElementById('emailInput').value = user.email || '';
+  document.getElementById('displayNameInput').value = user.displayName || '';
+
+  // Firestore complementa dados
+  userDataRef.get().then(doc=>{
+    if(doc.exists){
+      const data = doc.data();
+      if(!user.displayName && data.nome){
+        document.getElementById('displayNameInput').value = data.nome;
+      }
+      document.getElementById('moradaInput').value = data.morada || '';
+      document.getElementById('telefoneInput').value = data.telefone || '';
+    }
+  });
+
+  loadOrders();
+});
+
+// SALVAR ALTERAÇÕES
+function saveProfile(){
+  const newEmail = document.getElementById('emailInput').value.trim();
+  const name = document.getElementById('displayNameInput').value.trim();
+  const morada = document.getElementById('moradaInput').value.trim();
+  const telefone = document.getElementById('telefoneInput').value.trim();
+
+  if(currentUser){
+    // Atualizar email se mudou
+    const promises = [];
+    if(newEmail !== currentUser.email){
+      promises.push(currentUser.updateEmail(newEmail));
+    }
+    // Atualizar displayName no Auth
+    promises.push(currentUser.updateProfile({ displayName: name }));
+    // Atualizar Firestore
+    promises.push(userDataRef.set({ nome: name, email: newEmail, morada, telefone }, { merge:true }));
+
+    Promise.all(promises)
+      .then(()=> alert('Perfil atualizado!'))
+      .catch(err=> alert('Erro: ' + err.message));
+  }
+}
+
+// ALTERAR PASSWORD
+function changePassword(){
+  const newPass = prompt('Introduz a nova password:');
+  if(newPass && currentUser){
+    currentUser.updatePassword(newPass)
+      .then(()=> alert('Password alterada!'))
+      .catch(err=> alert(err.message));
+  }
+}
+
+// HISTÓRICO DE ENCOMENDAS
+function loadOrders(){
+  db.collection('orders').where('userId','==',currentUser.uid).orderBy('createdAt','desc').get()
+    .then(snapshot=>{
+      const el = document.getElementById('orderHistory');
+      if(snapshot.empty){ el.innerHTML = '<p>Não há encomendas.</p>'; return; }
+      let html='';
+      snapshot.forEach(doc=>{
+        const o = doc.data();
+        html += `<div class="order-item"><div>${o.items.map(i=>i.name).join(', ')}</div><div>€${o.total.toFixed(2)}</div></div>`;
+      });
+      el.innerHTML = html;
+    })
+    .catch(err=> alert(err.message));
+}
+</script>
+<footer>
+  <div style="max-width:1200px;margin:auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:40px;">
+
+    <div>
+      <h4>OBTER AJUDA</h4>
+      <a href="contact.html">Contacta-nos</a>
+      <a href="faq.html">Perguntas Frequentes</a>
+    </div>
+
+    <div>
+      <h4>ANEW</h4>
+      <a href="about.html">Sobre nós</a>
+    </div>
+
+    <div>
+      <h4>INFORMAÇÕES</h4>
+      <a href="#">Privacidade</a>
+      <a href="#">Termos</a>
+    </div>
+
+    <div>
+      <h4>SEGUE-NOS</h4>
+      <div style="display:flex;gap:18px;margin-top:12px;font-size:22px;">
+
+  <a href="https://www.instagram.com/anew.pt"
+     target="_blank"
+     aria-label="Instagram"
+     style="color:#3A2F2A;">
+    <i class="fa-brands fa-instagram"></i>
+  </a>
+
+  <a href="https://www.tiktok.com/@anew.jap"
+     target="_blank"
+     aria-label="TikTok"
+     style="color:#3A2F2A;">
+    <i class="fa-brands fa-tiktok"></i>
+  </a>
+
+  <a href="https://www.facebook.com/anew.jap"
+     target="_blank"
+     aria-label="Facebook"
+     style="color:#3A2F2A;">
+    <i class="fa-brands fa-facebook-f"></i>
+  </a>
+
+      </div>
+    </div>
+  </div>
+
+  <div style="text-align:center;margin-top:40px;font-size:14px;color:#666;">
+    © 2026 ANEW — Para todas as formas de ser mulher.
+  </div>
+</footer>
+</body>
+</html>

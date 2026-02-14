@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Produtos – ANEW</title>
+
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+
+<!-- firebase-config.js -->
+<script src="firebase-config.js"></script>
+
+<style>
+body{margin:0;font-family:Arial,sans-serif;background:#F4EDE3;color:#3A2F2A;}
+header{background:#E3C6BA;padding:16px 24px;display:flex;justify-content:center;}
+header h1{margin:0;font-size:24px;}
+
+/* MENU ICON */
+.menu-icon{
+    font-size:30px;
+    cursor:pointer;
+    position:fixed;
+    top:18px;
+    right:18px; /* sidebar à direita */
+    z-index:1100;
+}
+
+/* SIDEBAR */
+.sidebar{
+    height:100%;
+    width:0;
+    position:fixed;
+    top:0;
+    right:0; /* à direita */
+    background:#E3C6BA;
+    overflow-x:hidden;
+    transition:0.35s;
+    padding-top:60px;
+    z-index:1200;
+    box-shadow:-3px 0 10px rgba(0,0,0,0.15);
+}
+
+.sidebar a{
+    padding:14px 24px;
+    display:block;
+    font-size:18px;
+    color:#3A2F2A;
+    text-decoration:none;
+}
+
+.sidebar .closebtn{
+    position:absolute;
+    top:10px;
+    right:20px;
+    font-size:32px;
+}
+
+/* OVERLAY */
+.overlay{
+    display:none;
+    position:fixed;
+    top:0;left:0;
+    width:100%;height:100%;
+    background:rgba(0,0,0,0.45);
+    z-index:1150;
+}
+
+/* Produtos */
+.section{padding:48px;display:flex;flex-wrap:wrap;justify-content:center;gap:28px;}
+.product{background:#FFF;padding:18px;border-radius:12px;width:320px;text-align:center;box-shadow:0 6px 16px rgba(0,0,0,0.06);}
+.product img{width:100%;height:230px;object-fit:cover;border-radius:10px;}
+.product h4{margin:12px 0 6px;font-size:18px;}
+.product p.price{margin:6px 0;font-weight:bold;}
+.controls{display:flex;justify-content:center;gap:10px;margin-top:10px;}
+select{padding:8px;border-radius:8px;border:1px solid #ccc;}
+.product button{display:block;width:100%;margin-top:12px;padding:12px;border:none;background:#C69A8D;color:white;border-radius:8px;cursor:pointer;font-weight:bold;}
+.product button[disabled]{opacity:0.55;cursor:not-allowed;}
+.note{font-size:13px;color:#6b5a54;margin-top:8px;}
+.product a {
+    text-decoration: none;
+    color: inherit; 
+    display: block; /* Garante que o link ocupe o espaço do botão */
+    width: 100%;
+}
+
+footer{background:#fff;padding:60px 20px;margin-top:60px;}
+footer h4{margin-bottom:10px;}
+footer a{display:block;margin:6px 0;color:#3A2F2A;text-decoration:none;}
+footer a:hover{text-decoration:underline;}
+
+</style>
+<link
+  rel="stylesheet"
+  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+/>
+</head>
+<body>
+
+<header>
+  <h1>ANEW</h1>
+</header>
+
+<!-- botão para abrir sidebar -->
+<div class="menu-icon" onclick="toggleMenu()">☰</div>
+
+<!-- SIDEBAR -->
+<div id="sidebar" class="sidebar">
+  <a href="javascript:void(0)" class="closebtn" onclick="toggleMenu()">&times;</a>
+  <a href="index.html">Início</a>
+  <a href="products.html">Produtos</a>
+  <a href="cart.html">Carrinho</a>
+  <a href="profile.html">Perfil</a>
+  <a href="#" onclick="logout()">Logout</a>
+</div>
+
+<!-- overlay -->
+<div id="overlay" class="overlay" onclick="toggleMenu()"></div>
+
+<section class="section" id="productsList">
+
+  <!-- PRODUCT 1 -->
+  <div class="product" data-id="push-up">
+    <img src="images/product1.png" alt="Push Up">
+    <h4>Push Up</h4>
+    <p class="price">€29.99</p>
+<a href="product_detail.html">
+    <button class="addBtn">Ver agora</button>
+</a>
+  </div>
+
+  <!-- PRODUCT 2 -->
+  <div class="product" data-id="puberdade">
+    <img src="images/product2.png" alt="Puberdade">
+    <h4>Puberdade</h4>
+    <p class="price">€34.99</p>
+<a href="product_detail2.html">
+    <button class="addBtn">Ver agora</button>
+</a>
+  </div>
+
+  <!-- PRODUCT 3 -->
+  <div class="product" data-id="plus-size">
+    <img src="images/product3.png" alt="Plus Size">
+    <h4>Plus Size</h4>
+    <p class="price">€31.99</p>
+<a href="product_detail3.html">
+    <button class="addBtn">Ver agora</button>
+</a>
+  </div>
+
+  <!-- PRODUCT 4 -->
+  <div class="product" data-id="mastectomia">
+    <img src="images/product4.png" alt="Mastectomia">
+    <h4>Mastectomia</h4>
+    <p class="price">€39.99</p>
+<a href="product_detail4.html">
+    <button class="addBtn">Ver agora</button>
+</a>
+  </div>
+
+  <!-- PRODUCT 5 -->
+  <div class="product" data-id="amamentação">
+    <img src="images/product5.png" alt="Amamentação">
+    <h4>Amamentação</h4>
+    <p class="price">€49.99</p>
+<a href="product_detail5.html">
+    <button class="addBtn">Ver agora</button>
+</a>
+  </div>
+
+</section>
+
+<script>
+/* SIDEBAR */
+function toggleMenu(){
+  const sidebar = document.getElementById("sidebar");
+  const overlay = document.getElementById("overlay");
+  if(sidebar.style.width==="250px"){
+    sidebar.style.width="0";
+    overlay.style.display="none";
+  } else {
+    sidebar.style.width="250px";
+    overlay.style.display="block";
+  }
+}
+
+/* Logout */
+function logout(){
+  auth.signOut().then(()=> window.location="login.html");
+}
+
+/* FIREBASE + CART */
+let currentUser = null;
+const addButtons = document.querySelectorAll(".addBtn");
+addButtons.forEach(b=>b.disabled=true);
+
+auth.onAuthStateChanged(user=>{
+  currentUser=user;
+  addButtons.forEach(b=>b.disabled=!user);
+});
+
+function addToCartFromCard(buttonEl, name, price){
+  if(!currentUser){alert("Faz login para adicionar produtos!"); return;}
+  const productCard = buttonEl.closest(".product");
+  const size = productCard.querySelector(".size-select").value;
+  const color = productCard.querySelector(".color-select").value;
+  const cartRef = db.collection("carts").doc(currentUser.uid);
+  cartRef.get().then(doc=>{
+    let cart = doc.exists?doc.data().items:[];
+    cart.push({name,price,size,color,addedAt:new Date().toISOString()});
+    return cartRef.set({items:cart});
+  }).then(()=>alert(`${name} (${size}, ${color}) adicionado ao carrinho!`))
+    .catch(err=>alert("Erro: "+err.message));
+}
+</script>
+<footer>
+  <div style="max-width:1200px;margin:auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:40px;">
+
+    <div>
+      <h4>OBTER AJUDA</h4>
+      <a href="contact.html">Contacta-nos</a>
+      <a href="faq.html">Perguntas Frequentes</a>
+    </div>
+
+    <div>
+      <h4>ANEW</h4>
+      <a href="about.html">Sobre nós</a>
+    </div>
+
+    <div>
+      <h4>INFORMAÇÕES</h4>
+      <a href="#">Privacidade</a>
+      <a href="#">Termos</a>
+    </div>
+
+    <div>
+      <h4>SEGUE-NOS</h4>
+      <div style="display:flex;gap:18px;margin-top:12px;font-size:22px;">
+
+  <a href="https://www.instagram.com/anew.pt"
+     target="_blank"
+     aria-label="Instagram"
+     style="color:#3A2F2A;">
+    <i class="fa-brands fa-instagram"></i>
+  </a>
+
+  <a href="https://www.tiktok.com/@anew.jap"
+     target="_blank"
+     aria-label="TikTok"
+     style="color:#3A2F2A;">
+    <i class="fa-brands fa-tiktok"></i>
+  </a>
+
+  <a href="https://www.facebook.com/anew.jap"
+     target="_blank"
+     aria-label="Facebook"
+     style="color:#3A2F2A;">
+    <i class="fa-brands fa-facebook-f"></i>
+  </a>
+
+      </div>
+    </div>
+  </div>
+
+  <div style="text-align:center;margin-top:40px;font-size:14px;color:#666;">
+    © 2026 ANEW — Para todas as formas de ser mulher.
+  </div>
+</footer>
+
+</body>
+</html>

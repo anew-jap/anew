@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ANEW – Confidence, Reimagined</title>
+
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+<script src="firebase-config.js"></script>
+
+<style>
+body{margin:0;font-family:Arial,sans-serif;background:#F4EDE3;color:#3A2F2A;}
+header{background:#E3C6BA;padding:16px 24px;display:flex;justify-content:center;}
+header h1{margin:0;font-size:24px;}
+
+/* Sidebar */
+.menu-icon{font-size:28px;cursor:pointer;position:fixed;top:18px;right:18px;z-index:1100;}
+.sidebar{
+  height:100%;
+  width:0;
+  position:fixed;
+  top:0;
+  right:0;
+  background:#E3C6BA;
+  overflow-x:hidden;
+  transition:.35s;
+  padding-top:60px;
+  z-index:1200;
+  box-shadow:-3px 0 10px rgba(0,0,0,.15);
+}
+.sidebar a{padding:14px 24px;display:block;font-size:18px;color:#3A2F2A;text-decoration:none;}
+.sidebar .closebtn{position:absolute;top:10px;right:20px;font-size:32px;}
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:1150;}
+
+/* Hero */
+.hero{text-align:center;padding:80px 20px;background:#F2D7D0;}
+.hero h2{font-size:40px;margin-bottom:10px;}
+.hero p{font-size:20px;max-width:500px;margin:auto;}
+
+/* VIDEO + IMAGE SECTIONS */
+.video-section,.image-section{
+  position:relative;
+  width:100%;
+  height:75vh;
+  overflow:hidden;
+}
+.video-section video,
+.image-section img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+
+.video-overlay-btn,
+.image-overlay-btn{
+  position:absolute;
+  bottom:20px;
+  left:20px;
+}
+
+.video-overlay-btn a,
+.image-overlay-btn a{
+  color:#fff;
+  font-size:18px;
+  letter-spacing:1.5px;
+  text-decoration:none;
+  font-weight:600;
+  display:inline-flex;
+  align-items:center;
+  gap:14px;
+  text-transform:uppercase;
+}
+
+.video-overlay-btn a::after,
+.image-overlay-btn a::after{
+  content:"→";
+  font-size:22px;
+  transition:transform .3s ease;
+}
+
+.video-overlay-btn a:hover::after,
+.image-overlay-btn a:hover::after{
+  transform:translateX(6px);
+}
+
+.video-overlay-btn a:hover,
+.image-overlay-btn a:hover{
+  text-decoration:underline;
+}
+
+/* FEATURED PRODUCTS */
+.featured-products{
+  padding:80px 40px;
+  background:#fff;
+  text-align:center;
+}
+
+.featured-products h2{
+  font-size:32px;
+  margin-bottom:50px;
+}
+
+.product-grid{
+  display:flex;
+  gap:30px;
+  overflow-x:auto;
+  scroll-behavior:smooth;
+  padding-bottom:10px;
+}
+
+.product-grid::-webkit-scrollbar{
+  height:8px;
+}
+
+.product-grid::-webkit-scrollbar-thumb{
+  background:#E3C6BA;
+  border-radius:10px;
+}
+
+.product-card{
+  background:#F9F4EF;
+  padding:20px;
+  border-radius:12px;
+  transition:transform .3s ease, box-shadow .3s ease;
+}
+
+.product-card{
+  min-width:260px;
+  flex:0 0 auto;
+}
+
+.product-card:hover{
+  transform:translateY(-8px);
+  box-shadow:0 10px 25px rgba(0,0,0,0.1);
+}
+
+.product-card img{
+  width:100%;
+  height:320px;
+  object-fit:cover;
+  border-radius:10px;
+}
+
+.product-card h3{
+  margin:15px 0 5px;
+  font-size:18px;
+}
+
+.product-card p{
+  font-weight:bold;
+  margin-bottom:15px;
+}
+
+.buy-btn{
+  display:inline-block;
+  padding:10px 22px;
+  background:#E3C6BA;
+  color:#3A2F2A;
+  text-decoration:none;
+  border-radius:30px;
+  font-weight:600;
+  transition:.3s;
+}
+
+.buy-btn:hover{
+  background:#d5b1a4;
+}
+
+/* =========================
+   MOBILE AJUSTES INDEX
+========================= */
+@media (max-width: 768px){
+
+  /* Video & imagem mais baixos */
+  .video-section,
+  .image-section{
+    height:38vh;
+  }
+
+  /* Evitar cortes agressivos */
+  .video-section video,
+  .image-section img{
+    object-fit:cover;
+  }
+
+  /* Botões mais visíveis no mobile */
+  .video-overlay-btn a,
+  .image-overlay-btn a{
+    font-size:16px;
+  }
+
+  /* Hero mais compacto */
+  .hero{
+    padding:50px 20px;
+  }
+
+  .hero h2{
+    font-size:28px;
+  }
+
+  .hero p{
+    font-size:16px;
+  }
+}
+
+/* Footer */
+footer{background:#fff;padding:60px 20px;margin-top:60px;}
+footer h4{margin-bottom:10px;}
+footer a{display:block;margin:6px 0;color:#3A2F2A;text-decoration:none;}
+footer a:hover{text-decoration:underline;}
+
+</style>
+<link
+  rel="stylesheet"
+  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+/>
+</head>
+
+<body>
+
+<header><h1>ANEW</h1></header>
+
+<!-- Sidebar -->
+<div class="menu-icon" onclick="toggleMenu()">☰</div>
+<div id="sidebar" class="sidebar">
+  <a href="javascript:void(0)" class="closebtn" onclick="toggleMenu()">&times;</a>
+  <a href="index.html">Início</a>
+  <a href="products.html">Produtos</a>
+  <a href="cart.html">Carrinho</a>
+  <a href="profile.html">Perfil</a>
+  <a href="#" onclick="logout()">Logout</a>
+</div>
+<div id="overlay" class="overlay" onclick="toggleMenu()"></div>
+
+<!-- HERO -->
+<section class="hero">
+  <h2>Para todas as formas de ser mulher</h2>
+  <p>Sutiãs e próteses personalizadas para quem merece conforto, dignidade e confiança.</p>
+</section>
+
+<!-- VIDEO -->
+<section class="video-section">
+  <video autoplay muted loop playsinline>
+    <source src="https://res.cloudinary.com/dk6rrbjn1/video/upload/v1766074185/video_akdzre.mp4" type="video/mp4">
+  </video>
+  <div class="video-overlay-btn">
+    <a href="products.html">Comprar agora</a>
+  </div>
+</section>
+
+<!-- FEATURED PRODUCTS -->
+<section class="featured-products">
+  <h2>Destaques ANEW</h2>
+
+  <div class="product-grid">
+
+    <div class="product-card">
+      <img src="images/product1.png" alt="Push Up">
+      <h3>Push Up</h3>
+      <p>29.99€</p>
+      <a href="product_detail.html" class="buy-btn">Comprar</a>
+    </div>
+
+    <div class="product-card">
+      <img src="images/product2.png" alt="Puberdade">
+      <h3>Puberdade</h3>
+      <p>34.99€</p>
+      <a href="product_detail2.html" class="buy-btn">Comprar</a>
+    </div>
+
+    <div class="product-card">
+      <img src="images/product3.png" alt="Plus Size">
+      <h3>Plus Size</h3>
+      <p>31.99€</p>
+      <a href="product_detail3.html" class="buy-btn">Comprar</a>
+    </div>
+
+    <div class="product-card">
+      <img src="images/product4.png" alt="Mastectomia">
+      <h3>Mastectomia</h3>
+      <p>39.99€</p>
+      <a href="product_detail4.html" class="buy-btn">Comprar</a>
+    </div>
+
+    <div class="product-card">
+      <img src="images/product5.png" alt="Amamentação">
+      <h3>Amamentação</h3>
+      <p>49.99€</p>
+      <a href="product_detail5.html" class="buy-btn">Comprar</a>
+    </div>
+
+  </div>
+</section>
+
+<!-- IMAGE / NEWS -->
+<section class="image-section">
+  <img src="images/news.jpeg" alt="Notícias ANEW">
+  <div class="image-overlay-btn">
+    <a href="news.html">Notícias</a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div style="max-width:1200px;margin:auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:40px;">
+
+    <div>
+      <h4>OBTER AJUDA</h4>
+      <a href="contact.html">Contacta-nos</a>
+      <a href="faq.html">Perguntas Frequentes</a>
+    </div>
+
+    <div>
+      <h4>ANEW</h4>
+      <a href="about.html">Sobre nós</a>
+    </div>
+
+    <div>
+      <h4>INFORMAÇÕES</h4>
+      <a href="#">Privacidade</a>
+      <a href="#">Termos</a>
+    </div>
+
+    <div>
+      <h4>SEGUE-NOS</h4>
+      <div style="display:flex;gap:18px;margin-top:12px;font-size:22px;">
+
+  <a href="https://www.instagram.com/anew.pt"
+     target="_blank"
+     aria-label="Instagram"
+     style="color:#3A2F2A;">
+    <i class="fa-brands fa-instagram"></i>
+  </a>
+
+  <a href="https://www.tiktok.com/@anew.jap"
+     target="_blank"
+     aria-label="TikTok"
+     style="color:#3A2F2A;">
+    <i class="fa-brands fa-tiktok"></i>
+  </a>
+
+  <a href="https://www.facebook.com/anew.jap"
+     target="_blank"
+     aria-label="Facebook"
+     style="color:#3A2F2A;">
+    <i class="fa-brands fa-facebook-f"></i>
+  </a>
+
+      </div>
+    </div>
+  </div>
+
+  <div style="text-align:center;margin-top:40px;font-size:14px;color:#666;">
+    © 2026 ANEW — Para todas as formas de ser mulher.
+  </div>
+</footer>
+
+<script>
+function toggleMenu(){
+  const s=document.getElementById('sidebar');
+  const o=document.getElementById('overlay');
+  if(s.style.width==='250px'){s.style.width='0';o.style.display='none';}
+  else{s.style.width='250px';o.style.display='block';}
+}
+</script>
+
+<script src="//code.tidio.co/vhuucpvsgiojngbm6uwhdssr7z3z7nyj.js" async></script>
+</body>
+</html>

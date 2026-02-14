@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Produto – ANEW</title>
+
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+<script src="firebase-config.js"></script>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<style>
+body{margin:0;font-family:Arial,sans-serif;background:#F4EDE3;color:#3A2F2A;}
+header{background:#E3C6BA;padding:16px 24px;display:flex;justify-content:center;}
+header h1{margin:0;font-size:24px;}
+
+.menu-icon{font-size:30px;cursor:pointer;position:fixed;top:18px;right:18px;z-index:1100;}
+.sidebar{height:100%;width:0;position:fixed;top:0;right:0;background:#E3C6BA;overflow-x:hidden;transition:0.35s;padding-top:60px;z-index:1200;box-shadow:-3px 0 10px rgba(0,0,0,0.15);}
+.sidebar a{padding:14px 24px;display:block;font-size:18px;color:#3A2F2A;text-decoration:none;}
+.sidebar .closebtn{position:absolute;top:10px;right:20px;font-size:32px;}
+.overlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.45);z-index:1150;}
+
+.product-container{
+  display:flex;
+  gap:60px;
+  padding:80px 10%;
+  background:#fff;
+  max-width:1300px;
+  margin:auto;
+}
+
+.product-left, .product-right{flex:1;}
+
+.main-image{
+  width:100%;
+  border-radius:12px;
+  box-shadow:0 10px 25px rgba(0,0,0,0.05);
+}
+
+.price-box{margin:20px 0;}
+.new-price{font-size:22px;font-weight:bold;}
+
+.color-select button,
+.sizes button{
+  padding:8px 14px;
+  margin:5px;
+  border-radius:20px;
+  border:1px solid #ddd;
+  background:white;
+  cursor:pointer;
+  transition:0.3s;
+}
+
+.color-select button.selected,
+.sizes button.selected{
+  background:#E3C6BA;
+  border-color:#E3C6BA;
+}
+
+.main-buy-btn{
+  width:100%;
+  padding:14px;
+  background:#E3C6BA;
+  border:none;
+  border-radius:30px;
+  font-weight:600;
+  cursor:pointer;
+  margin:20px 0;
+  transition:0.3s;
+}
+.main-buy-btn:hover{background:#d5b1a4;}
+
+/* REVIEWS */
+.review-section{margin-top:50px;}
+.stars-select span{
+  font-size:24px;
+  cursor:pointer;
+  margin-right:5px;
+  color:#ccc;
+}
+.review{
+  background:#F9F4EF;
+  padding:12px;
+  margin-top:15px;
+  border-radius:10px;
+}
+textarea{
+  width:100%;
+  padding:10px;
+  border-radius:8px;
+  border:1px solid #ddd;
+  margin-top:10px;
+  resize:none;
+}
+.review-btn{
+  margin-top:10px;
+  padding:8px 20px;
+  background:#6B5A54;
+  color:white;
+  border:none;
+  border-radius:20px;
+  cursor:pointer;
+}
+
+footer{background:#fff;padding:60px 20px;margin-top:30px;}
+footer h4{margin-bottom:10px;}
+footer a{display:block;margin:6px 0;color:#3A2F2A;text-decoration:none;}
+footer a:hover{text-decoration:underline;}
+
+@media(max-width:900px){
+  .product-container{flex-direction:column;padding:40px 20px;}
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <h1>ANEW</h1>
+</header>
+
+<div class="menu-icon" onclick="toggleMenu()">☰</div>
+
+<div id="sidebar" class="sidebar">
+  <a href="javascript:void(0)" class="closebtn" onclick="toggleMenu()">&times;</a>
+  <a href="index.html">Início</a>
+  <a href="products.html">Produtos</a>
+  <a href="cart.html">Carrinho</a>
+  <a href="profile.html">Perfil</a>
+  <a href="#" onclick="logout()">Logout</a>
+</div>
+
+<div id="overlay" class="overlay" onclick="toggleMenu()"></div>
+
+<section class="product-container">
+
+  <div class="product-left">
+    <img src="images/product4.png" class="main-image">
+  </div>
+
+  <div class="product-right">
+    <h1>Mastectomia</h1>
+
+    <div class="price-box">
+      <span class="new-price">34.99€</span>
+    </div>
+
+    <div class="color-select">
+      <p>Cor:</p>
+      <button onclick="selectColor(this)">Preto</button>
+      <button onclick="selectColor(this)">Branco</button>
+      <button onclick="selectColor(this)">Beje</button>
+      <button onclick="selectColor(this)">Rosa</button>
+    </div>
+
+    <div class="sizes">
+      <p>Tamanho:</p>
+      <button onclick="selectSize(this)">32B</button>
+      <button onclick="selectSize(this)">34B</button>
+      <button onclick="selectSize(this)">36B</button>
+      <button onclick="selectSize(this)">38B</button>
+    </div>
+
+    <button class="main-buy-btn" onclick="addToCart('Mastectomia',29.99)">
+      Adicionar ao Carrinho
+    </button>
+
+    <!-- REVIEWS -->
+    <div class="review-section">
+      <h3>Avaliações</h3>
+
+      <strong><span id="averageRating">0</span>/5</strong>
+      (<span id="totalReviews">0</span> avaliações)
+
+      <div class="stars-select">
+        <span onclick="setRating(1)">★</span>
+        <span onclick="setRating(2)">★</span>
+        <span onclick="setRating(3)">★</span>
+        <span onclick="setRating(4)">★</span>
+        <span onclick="setRating(5)">★</span>
+      </div>
+
+      <textarea id="reviewText" placeholder="Partilha a tua experiência"></textarea>
+      <button class="review-btn" onclick="submitReview()">Publicar</button>
+
+      <div id="reviewsContainer"></div>
+    </div>
+
+  </div>
+
+</section>
+
+<script>
+
+const productId = "mastectomia";
+let selectedRating = 0;
+
+let currentUser=null;
+let selectedSize="";
+let selectedColor="";
+
+auth.onAuthStateChanged(user=>{
+  currentUser=user;
+  loadReviews();
+});
+
+function toggleMenu(){
+  const s=document.getElementById("sidebar");
+  const o=document.getElementById("overlay");
+  if(s.style.width==="250px"){s.style.width="0";o.style.display="none";}
+  else{s.style.width="250px";o.style.display="block";}
+}
+
+function logout(){
+  auth.signOut().then(()=>window.location="login.html");
+}
+
+function selectSize(btn){
+  document.querySelectorAll(".sizes button").forEach(b=>b.classList.remove("selected"));
+  btn.classList.add("selected");
+  selectedSize=btn.innerText;
+}
+
+function selectColor(btn){
+  document.querySelectorAll(".color-select button").forEach(b=>b.classList.remove("selected"));
+  btn.classList.add("selected");
+  selectedColor=btn.innerText;
+}
+
+function addToCart(name,price){
+  if(!currentUser){alert("Faz login primeiro.");return;}
+  if(!selectedSize || !selectedColor){alert("Seleciona tamanho e cor.");return;}
+
+  const cartRef=db.collection("carts").doc(currentUser.uid);
+
+  cartRef.get().then(doc=>{
+    let cart=doc.exists?doc.data().items:[];
+    cart.push({
+      name:name,
+      price:price,
+      size:selectedSize,
+      color:selectedColor,
+      addedAt:new Date().toISOString()
+    });
+    return cartRef.set({items:cart});
+  }).then(()=>{
+    alert("Produto adicionado ao carrinho 🤍");
+  }).catch(err=>alert("Erro: "+err.message));
+}
+
+/* ⭐ RATING */
+function setRating(rating){
+  selectedRating = rating;
+  document.querySelectorAll(".stars-select span")
+    .forEach((star,index)=>{
+      star.style.color = index < rating ? "#E3C6BA" : "#ccc";
+    });
+}
+
+/* 📝 SUBMIT REVIEW */
+function submitReview(){
+  if(!currentUser){alert("Precisas de iniciar sessão.");return;}
+  const text=document.getElementById("reviewText").value.trim();
+  if(selectedRating===0){alert("Seleciona uma classificação.");return;}
+  if(text===""){alert("Escreve um comentário.");return;}
+
+  db.collection("reviews")
+  .where("productId","==",productId)
+  .where("userId","==",currentUser.uid)
+  .get()
+  .then(snapshot=>{
+    if(!snapshot.empty){
+      alert("Já avaliaste este produto.");
+      return;
+    }
+
+    db.collection("reviews").add({
+      productId,
+      userId:currentUser.uid,
+      userName:currentUser.displayName || "Cliente",
+      rating:selectedRating,
+      text,
+      createdAt:firebase.firestore.FieldValue.serverTimestamp()
+    }).then(()=>{
+      document.getElementById("reviewText").value="";
+      selectedRating=0;
+      setRating(0);
+    });
+  });
+}
+
+/* 📊 LOAD REVIEWS */
+function loadReviews(){
+
+  db.collection("reviews")
+  .where("productId","==",productId)
+  .onSnapshot(snapshot=>{
+
+    let total=0;
+    let count=0;
+    let html="";
+
+    snapshot.forEach(doc=>{
+      const d=doc.data();
+      total+=d.rating;
+      count++;
+
+      html+=`
+        <div class="review">
+          <strong>${d.userName}</strong><br>
+          ★ ${d.rating}/5
+          <p>${d.text}</p>
+        </div>
+      `;
+    });
+
+    document.getElementById("reviewsContainer").innerHTML=html;
+    document.getElementById("totalReviews").innerText=count;
+    document.getElementById("averageRating").innerText=
+      count ? (total/count).toFixed(1) : 0;
+
+  }, error=>{
+    console.error("Erro ao carregar reviews:", error);
+  });
+}
+</script>
+
+<footer>
+  <div style="max-width:1200px;margin:auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:40px;">
+
+    <div>
+      <h4>OBTER AJUDA</h4>
+      <a href="contact.html">Contacta-nos</a>
+      <a href="faq.html">Perguntas Frequentes</a>
+    </div>
+
+    <div>
+      <h4>ANEW</h4>
+      <a href="about.html">Sobre nós</a>
+    </div>
+
+    <div>
+      <h4>INFORMAÇÕES</h4>
+      <a href="#">Privacidade</a>
+      <a href="#">Termos</a>
+    </div>
+
+    <div>
+      <h4>SEGUE-NOS</h4>
+      <div style="display:flex;gap:18px;margin-top:12px;font-size:22px;">
+
+  <a href="https://www.instagram.com/anew.pt"
+     target="_blank"
+     aria-label="Instagram"
+     style="color:#3A2F2A;">
+    <i class="fa-brands fa-instagram"></i>
+  </a>
+
+  <a href="https://www.tiktok.com/@anew.jap"
+     target="_blank"
+     aria-label="TikTok"
+     style="color:#3A2F2A;">
+    <i class="fa-brands fa-tiktok"></i>
+  </a>
+
+  <a href="https://www.facebook.com/anew.jap"
+     target="_blank"
+     aria-label="Facebook"
+     style="color:#3A2F2A;">
+    <i class="fa-brands fa-facebook-f"></i>
+  </a>
+
+      </div>
+    </div>
+  </div>
+
+  <div style="text-align:center;margin-top:40px;font-size:14px;color:#666;">
+    © 2026 ANEW — Para todas as formas de ser mulher.
+  </div>
+</footer>
+
+</body>
+</html>
